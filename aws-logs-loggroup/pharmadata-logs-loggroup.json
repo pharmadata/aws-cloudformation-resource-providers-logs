@@ -1,7 +1,7 @@
 {
-  "typeName": "AWS::Logs::LogGroup",
-  "description": "Resource schema for AWS::Logs::LogGroup",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs.git",
+  "typeName": "PharmaData::Logs::LogGroup",
+  "description": "Resource schema for PharmaData::Logs::LogGroup",
+  "sourceUrl": "https://github.com/pharmadata/aws-cloudformation-resource-providers-logs.git",
   "definitions": {
     "Tag": {
       "description": "A key-value pair to associate with a resource.",

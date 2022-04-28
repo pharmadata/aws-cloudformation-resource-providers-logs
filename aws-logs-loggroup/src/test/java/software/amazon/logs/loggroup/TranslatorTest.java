@@ -234,13 +234,13 @@ public class TranslatorTest {
 
     @Test
     public void buildResourceAlreadyExistsErrorMessage() {
-        final String expected = "Resource of type 'AWS::Logs::LogGroup' with identifier 'ID' already exists.";
+        final String expected = "Resource of type 'PharmaData::Logs::LogGroup' with identifier 'ID' already exists.";
         assertThat(Translator.buildResourceAlreadyExistsErrorMessage("ID")).isEqualTo(expected);
     }
 
     @Test
     public void buildResourceDoesNotExistErrorMessage() {
-        final String expected = "Resource of type 'AWS::Logs::LogGroup' with identifier 'ID' was not found.";
+        final String expected = "Resource of type 'PharmaData::Logs::LogGroup' with identifier 'ID' was not found.";
         assertThat(Translator.buildResourceDoesNotExistErrorMessage("ID")).isEqualTo(expected);
     }
 

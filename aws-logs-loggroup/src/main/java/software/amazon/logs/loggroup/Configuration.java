@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 class Configuration extends BaseConfiguration {
 
     public Configuration() {
-        super("aws-logs-loggroup.json");
+        super("pharmadata-logs-loggroup.json");
     }
 
     public JSONObject resourceSchemaJSONObject() {

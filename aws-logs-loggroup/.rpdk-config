@@ -1,6 +1,6 @@
 {
     "artifact_type": "RESOURCE",
-    "typeName": "AWS::Logs::LogGroup",
+    "typeName": "PharmaData::Logs::LogGroup",
     "language": "java",
     "runtime": "java8",
     "entrypoint": "software.amazon.logs.loggroup.HandlerWrapper::handleRequest",

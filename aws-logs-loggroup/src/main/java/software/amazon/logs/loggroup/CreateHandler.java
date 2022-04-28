@@ -29,8 +29,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             proxy.injectCredentialsAndInvokeV2(Translator.translateToCreateRequest(model, request.getDesiredResourceTags()),
                 ClientBuilder.getClient()::createLogGroup);
         } catch (final ResourceAlreadyExistsException e) {
-            throw new CfnAlreadyExistsException(ResourceModel.TYPE_NAME,
-                Objects.toString(model.getPrimaryIdentifier()));
+            final String importMessage = String.format("%s [%s] already exists - importing and updating.",
+                    ResourceModel.TYPE_NAME, model.getLogGroupName());
+            logger.log(importMessage);
+            return new UpdateHandler().handleRequest(proxy, request, callbackContext, logger);
         }
         final String createMessage = String.format("%s [%s] successfully created.",
                 ResourceModel.TYPE_NAME, model.getLogGroupName());

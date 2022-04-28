@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>software.amazon.logs.loggroup</groupId>
-    <artifactId>aws-logs-loggroup-handler</artifactId>
-    <name>aws-logs-loggroup-handler</name>
+    <artifactId>pharmadata-logs-loggroup-handler</artifactId>
+    <name>pharmadata-logs-loggroup-handler</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -220,7 +220,7 @@
             <resource>
                 <directory>${project.basedir}</directory>
                 <includes>
-                    <include>aws-logs-loggroup.json</include>
+                    <include>pharmadata-logs-loggroup.json</include>
                 </includes>
             </resource>
         </resources>

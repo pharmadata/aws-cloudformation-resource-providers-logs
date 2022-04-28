@@ -182,27 +182,4 @@ public class CreateHandlerTest {
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
-
-    @Test
-    public void handleRequest_FailureAlreadyExists() {
-        doThrow(ResourceAlreadyExistsException.class)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        ArgumentMatchers.any(),
-                        ArgumentMatchers.any()
-                );
-
-        final ResourceModel model = ResourceModel.builder()
-                .logGroupName("LogGroup")
-                .retentionInDays(1)
-                .kmsKeyId("arn:aws:kms:us-east-1:$123456789012:key/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
-                .build();
-
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
-                .build();
-
-        assertThrows(CfnAlreadyExistsException.class,
-            () -> handler.handleRequest(proxy, request, null, logger));
-    }
 }
