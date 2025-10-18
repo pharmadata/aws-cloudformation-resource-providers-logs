@@ -12,6 +12,7 @@
   "tagging" : {
     "taggable" : false
   },
+  "replacementStrategy": "delete_then_create",
   "definitions": {
     "Dimension": {
       "description": "the key-value pairs that further define a metric.",
@@ -115,6 +116,7 @@
       "type": "array",
       "minItems": 1,
       "maxItems": 1,
+      "insertionOrder": false,
       "items": {
         "$ref": "#/definitions/MetricTransformation"
       }

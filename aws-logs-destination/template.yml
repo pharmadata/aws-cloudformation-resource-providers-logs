@@ -5,18 +5,19 @@ Description: AWS SAM template for the AWS::Logs::Destination resource type
 Globals:
   Function:
     Timeout: 60  # docker start-up times can be long for SAM CLI
+    MemorySize: 512
 
 Resources:
   TypeFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.logs.destination.HandlerWrapper::handleRequest
-      Runtime: java8
+      Runtime: java17
       CodeUri: ./target/aws-logs-destination-handler-1.0-SNAPSHOT.jar
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
       Handler: software.amazon.logs.destination.HandlerWrapper::testEntrypoint
-      Runtime: java8
+      Runtime: java17
       CodeUri: ./target/aws-logs-destination-handler-1.0-SNAPSHOT.jar
