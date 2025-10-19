@@ -9,6 +9,8 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.cloudformation.resource.IdentifierUtils;
 import com.amazonaws.util.StringUtils;
 import software.amazon.awssdk.services.cloudwatchlogs.model.ResourceAlreadyExistsException;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 
 import java.util.Objects;
 
@@ -24,10 +26,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final Logger logger) {
         prepareResourceModel(request);
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
 
         try {
-            proxy.injectCredentialsAndInvokeV2(Translator.translateToCreateRequest(model, request.getDesiredResourceTags()),
-                ClientBuilder.getClient()::createLogGroup);
+            proxy.injectCredentialsAndInvokeV2(Translator.translateToCreateRequest(model, request.getDesiredResourceTags()), cwl.client()::createLogGroup);
         } catch (final ResourceAlreadyExistsException e) {
             final String importMessage = String.format("%s [%s] already exists - importing and updating.",
                     ResourceModel.TYPE_NAME, model.getLogGroupName());
@@ -83,8 +85,9 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                                        final ResourceHandlerRequest<ResourceModel> request,
                                        final Logger logger) {
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         proxy.injectCredentialsAndInvokeV2(Translator.translateToPutRetentionPolicyRequest(model),
-            ClientBuilder.getClient()::putRetentionPolicy);
+            cwl.client()::putRetentionPolicy);
 
         final String retentionPolicyMessage =
             String.format("%s [%s] successfully applied retention in days: [%d].",

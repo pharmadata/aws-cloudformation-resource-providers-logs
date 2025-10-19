@@ -20,6 +20,8 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,12 +73,13 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
     private void deleteRetentionPolicy(final AmazonWebServicesClientProxy proxy,
                                        final ResourceHandlerRequest<ResourceModel> request,
                                        final Logger logger) {
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         final ResourceModel model = request.getDesiredResourceState();
         final DeleteRetentionPolicyRequest deleteRetentionPolicyRequest =
             Translator.translateToDeleteRetentionPolicyRequest(model);
         try {
             proxy.injectCredentialsAndInvokeV2(deleteRetentionPolicyRequest,
-                ClientBuilder.getClient()::deleteRetentionPolicy);
+                cwl.client()::deleteRetentionPolicy);
         } catch (final ResourceNotFoundException e) {
             throwNotFoundException(model);
         }
@@ -91,11 +94,12 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                                     final ResourceHandlerRequest<ResourceModel> request,
                                     final Logger logger) {
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         final PutRetentionPolicyRequest putRetentionPolicyRequest =
             Translator.translateToPutRetentionPolicyRequest(model);
         try {
             proxy.injectCredentialsAndInvokeV2(putRetentionPolicyRequest,
-                ClientBuilder.getClient()::putRetentionPolicy);
+                cwl.client()::putRetentionPolicy);
         } catch (final ResourceNotFoundException e) {
             throwNotFoundException(model);
         }
@@ -110,11 +114,12 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                                     final ResourceHandlerRequest<ResourceModel> request,
                                     final Logger logger) {
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         final DisassociateKmsKeyRequest disassociateKmsKeyRequest =
                 Translator.translateToDisassociateKmsKeyRequest(model);
         try {
             proxy.injectCredentialsAndInvokeV2(disassociateKmsKeyRequest,
-                    ClientBuilder.getClient()::disassociateKmsKey);
+                    cwl.client()::disassociateKmsKey);
         } catch (final ResourceNotFoundException e) {
             // The specified resource does not exist.
             throwNotFoundException(model);
@@ -140,11 +145,12 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                                  final ResourceHandlerRequest<ResourceModel> request,
                                  final Logger logger) {
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         final AssociateKmsKeyRequest associateKmsKeyRequest =
                 Translator.translateToAssociateKmsKeyRequest(model);
         try {
             proxy.injectCredentialsAndInvokeV2(associateKmsKeyRequest,
-                    ClientBuilder.getClient()::associateKmsKey);
+                    cwl.client()::associateKmsKey);
         } catch (final ResourceNotFoundException e) {
             // The specified resource does not exist.
             throwNotFoundException(model);
@@ -170,14 +176,14 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                             final ResourceModel model,
                             final ResourceHandlerRequest<ResourceModel> request,
                             final Logger logger) {
-        
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         try {
             // Need to make a ListTagsLogGroup request here
             // Since we launched tag support for LogGroup late, existing stack tags will not
             // propagate to the LogGroup resource using getPreviouslyAttachedTags() which returns
             // previous stack tags regardless if they are propagated to the resource or not.
             final ListTagsLogGroupResponse listTagsResponse = proxy.injectCredentialsAndInvokeV2(Translator.translateToListTagsLogGroupRequest(model.getLogGroupName()),
-                    ClientBuilder.getClient()::listTagsLogGroup);
+                    cwl.client()::listTagsLogGroup);
 
             final Map<String, String> currentTags = listTagsResponse != null ? listTagsResponse.tags() : Collections.emptyMap();
             final Map<String, String> desiredTags = TagHelper.getNewDesiredTags(model, request);
@@ -188,7 +194,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             if (!tagsToRemove.isEmpty()) {
                 final List<String> tagKeys = new ArrayList<>(tagsToRemove);
                 proxy.injectCredentialsAndInvokeV2(Translator.translateToUntagLogGroupRequest(model.getLogGroupName(), tagKeys),
-                    ClientBuilder.getClient()::untagLogGroup);
+                    cwl.client()::untagLogGroup);
                 
                 final String message =
                     String.format("%s [%s] successfully removed tags: [%s]",
@@ -197,7 +203,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             }
             if(!tagsToAdd.isEmpty()) {
                 proxy.injectCredentialsAndInvokeV2(Translator.translateToTagLogGroupRequest(model.getLogGroupName(), tagsToAdd),
-                    ClientBuilder.getClient()::tagLogGroup);
+                    cwl.client()::tagLogGroup);
                 
                 final String message =
                     String.format("%s [%s] successfully added tags: [%s]",

@@ -9,6 +9,8 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.awssdk.services.cloudwatchlogs.model.DescribeLogGroupsResponse;
 import software.amazon.awssdk.services.cloudwatchlogs.model.ResourceNotFoundException;
 import software.amazon.awssdk.services.cloudwatchlogs.model.LogGroup;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 
 import java.util.Objects;
 
@@ -22,6 +24,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         final Logger logger) {
 
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
 
         if (model == null || model.getLogGroupName() == null) {
             throwNotFoundException(model);
@@ -34,7 +37,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         do {
             try {
                 response = proxy.injectCredentialsAndInvokeV2(Translator.translateToReadRequest(model, nextToken),
-                        ClientBuilder.getClient()::describeLogGroups);
+                        cwl.client()::describeLogGroups);
             } catch (final ResourceNotFoundException e) {
                 throwNotFoundException(model);
             }
@@ -57,7 +60,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         ListTagsLogGroupResponse tagsResponse = null;
         try {
             tagsResponse = proxy.injectCredentialsAndInvokeV2(Translator.translateToListTagsLogGroupRequest(model.getLogGroupName()),
-                    ClientBuilder.getClient()::listTagsLogGroup);
+                    cwl.client()::listTagsLogGroup);
         } catch (final CloudWatchLogsException e) {
             if (Translator.ACCESS_DENIED_ERROR_CODE.equals(e.awsErrorDetails().errorCode())) {
                 // fail silently, if there is no permission to list tags

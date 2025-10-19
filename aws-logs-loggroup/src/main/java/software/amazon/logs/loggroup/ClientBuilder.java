@@ -5,6 +5,9 @@ import software.amazon.awssdk.core.retry.RetryPolicy;
 import software.amazon.awssdk.core.retry.conditions.RetryCondition;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.cloudformation.LambdaWrapper;
+import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.awssdk.regions.Region;
 
 public class ClientBuilder {
     private ClientBuilder() {}
@@ -15,10 +18,10 @@ public class ClientBuilder {
             .retryCondition(RetryCondition.defaultRetryCondition())
             .build();
 
-    public static CloudWatchLogsClient getClient() {
-        return CloudWatchLogsClient.builder()
+    public static ProxyClient<CloudWatchLogsClient> getClient(final AmazonWebServicesClientProxy proxy) {
+        return proxy.newProxy(() -> CloudWatchLogsClient.builder()
             .httpClient(LambdaWrapper.HTTP_CLIENT)
-            .overrideConfiguration(ClientOverrideConfiguration.builder().retryPolicy(RETRY_POLICY).build())
-            .build();
+            .overrideConfiguration(c -> c.retryPolicy(RETRY_POLICY))
+            .build());
     }
 }

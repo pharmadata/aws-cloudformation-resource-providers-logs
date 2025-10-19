@@ -5,6 +5,8 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import software.amazon.awssdk.services.cloudwatchlogs.model.ResourceNotFoundException;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 
 import java.util.Objects;
 
@@ -18,9 +20,10 @@ public class DeleteHandler extends BaseHandler<CallbackContext> {
         final Logger logger) {
 
         final ResourceModel model = request.getDesiredResourceState();
+        final ProxyClient<CloudWatchLogsClient> cwl = ClientBuilder.getClient(proxy);
         try {
             proxy.injectCredentialsAndInvokeV2(Translator.translateToDeleteRequest(model),
-                ClientBuilder.getClient()::deleteLogGroup);
+                cwl.client()::deleteLogGroup);
         } catch (final ResourceNotFoundException e) {
             throw new software.amazon.cloudformation.exceptions.ResourceNotFoundException(ResourceModel.TYPE_NAME,
                 Objects.toString(model.getPrimaryIdentifier()));
